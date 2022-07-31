@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { onSetActiveEvent } from "../store/calendar/calendarSlice";
+import { onAddNewEvent, onSetActiveEvent } from "../store/calendar/calendarSlice";
 
 export const useCalendarStore = () => {
 
@@ -14,11 +14,21 @@ export const useCalendarStore = () => {
         dispatch(onSetActiveEvent(calendarEvent));
     }
 
+    // otra forma de hacer en lugar de un thunk
+    const startSavingEvent = async(calendarEvent) => {
+        if (calendarEvent._id) {
+
+        } else {
+            dispatch(onAddNewEvent({...calendarEvent, _id: new Date().getTime() }));
+        }
+    }
+
     return {
         // Properties
         events,
         activeEvent,
         // Methods
         setActiveEvent,
+        startSavingEvent,
     }
 }
