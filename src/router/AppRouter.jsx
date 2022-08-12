@@ -25,12 +25,23 @@ export const AppRouter = () => {
     <Routes>
       {
         (authStatus == 'not-authenticated')
-        ? <Route path='/auth/*' element={ <LoginPage />} />
-        : <Route path='/*' element={ <CalendarPage />} />
+
+          ? (
+            <>
+              <Route path='/auth/*' element={ <LoginPage />} />
+              <Route path='/*' element={ <Navigate to="/auth/login" />} />
+            </>
+          )
+          : (
+            <>
+              <Route path='/' element={ <CalendarPage />} />
+              <Route path='/*' element={ <Navigate to="/" />} />
+            </>
+          )
       }
 
       {/* si no está autenticado y pone cualquier ruta va redireccionar al login */}
-      <Route path="/*" element={<Navigate to="/auth/login" />} />
+      {/* <Route path="/*" element={<Navigate to="/auth/login" />} /> */}
     </Routes>
   )
 }
