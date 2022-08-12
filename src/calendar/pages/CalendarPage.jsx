@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Calendar } from 'react-big-calendar'
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 // import { addHours } from 'date-fns'
@@ -21,7 +21,7 @@ import { useUiStore, useCalendarStore } from '../../hooks';
 export const CalendarPage = () => {
 
   const { openDateModal } = useUiStore();
-  const { events, setActiveEvent } = useCalendarStore();
+  const { events, setActiveEvent, startLoadingEvents } = useCalendarStore();
 
   const [lastView, setLastView] = useState(localStorage.getItem('lastView') || 'week');
 
@@ -52,6 +52,12 @@ export const CalendarPage = () => {
     // no es necesario llamar a setLastView porque el calendario cambia la vista
     setLastView(event)
   }
+
+  // solo se dispara una vez, al cargar el componente
+  useEffect(() => {
+    startLoadingEvents();
+  }, []);
+
 
   return (
     <>
