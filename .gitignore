@@ -26,3 +26,4 @@ dist-ssr
 .nvmrc
 .env
 .env.production
+.env.test
