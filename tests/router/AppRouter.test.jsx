@@ -1,8 +1,17 @@
 import { render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
+import { CalendarPage } from "../../src/calendar";
 import { useAuthStore } from "../../src/hooks/useAuthStore";
 import { AppRouter } from "../../src/router/AppRouter";
 
 jest.mock('../../src/hooks/useAuthStore');
+
+// se hace el mock del CalendarPage porque por defecto al ir a la ruta de /calendar se rederiza el componente CalendarPage como lo haría react, para evitar hacer mock en los demas store se puede hacer el mock de todo el componente
+jest.mock('../../src/calendar', () => ({
+    CalendarPage: () => <h1>CalendarPage</h1>
+}))
+
+
 
 describe('Pruebas en <AppRouter />', () => {
 
@@ -23,5 +32,37 @@ describe('Pruebas en <AppRouter />', () => {
 
         expect(screen.getByText('Cargando...')).toBeTruthy();
         expect(mockCheckAuthToken).toHaveBeenCalled();
+    });
+
+    test('debe de mostrar el login en caso de no estar autenticado', () => {
+        useAuthStore.mockReturnValue({
+            status: 'not-authenticated',
+            checkAuthToken: mockCheckAuthToken,
+        });
+
+        // en el initialEntries se pone la ruta en la que se quiere ubicar, a pesar de que esa ruta no existe pasa la prueba porque se redirige al LoginPage por la condición del AppRouter
+        const { container } = render(
+            <MemoryRouter initialEntries={['/auth/mas-rutas']}>
+                < AppRouter />
+            </MemoryRouter>
+        );
+
+        expect(screen.getByText('Ingreso')).toBeTruthy();
+        expect(container).toMatchSnapshot();
+    });
+
+    test('debe de mostrar el calendario en caso de si estar autenticado', () => {
+        useAuthStore.mockReturnValue({
+            status: 'authenticated',
+            checkAuthToken: mockCheckAuthToken,
+        });
+
+        render(
+            <MemoryRouter>
+                < AppRouter />
+            </MemoryRouter>
+        );
+
+        expect(screen.getByText('CalendarPage')).toBeTruthy();
     });
 });
